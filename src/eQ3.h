@@ -10,7 +10,7 @@
 #include "eQ3_message.h"
 #include "eQ3_util.h"
 
-#include <PrintDebug.h>
+#include "PrintDebug.h"
 
 #define BLE_UUID_SERVICE "58e06900-15d8-11e6-b737-0002a5d5c51b"
 #define BLE_UUID_WRITE "3141dd40-15db-11e6-a24b-0002a5d5c51b"
@@ -47,29 +47,33 @@ class eQ3 : public NimBLEClientCallbacks {
 
     long lastActivity = 0;
 
-    SemaphoreHandle_t mutex;
-    std::function<void(LockStatus)> onStatusChange;
+    //SemaphoreHandle_t mutex;
+    std::function<void(LockStatus)> onStatusChange = nullptr;
+public:
+    void onNotify(NimBLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify);    
+
 public:
     ClientState state;
     NimBLEClient *bleClient;
     LockStatus _LockStatus;
     int _RSSI;
     std::string raw_data;
+
+
+    eQ3();
+    void setup(String ble_address, String user_key, unsigned char user_id = 0xFF, String name = "");
+    void loop();
+    void setOnStatusChange(std::function<void(LockStatus)> cb);
+    
     void lock();
     void unlock();
     void open();
     void pairingRequest(std::string cardkey);
     void connect();
     void disconnect();
-    bool connected();
-    bool paired();
+    bool isConnected();
+    bool isPaired();
     void updateInfo();
-    void toggle();
-    void setOnStatusChange(std::function<void(LockStatus)> cb);
-    void onNotify(NimBLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify);
-    void setup(String ble_address, String user_key, unsigned char user_id = 0xFF, String name = "");
-    void loop();
-    eQ3();
 };
 
 #endif //DOOR_OPENER_EQ3_H

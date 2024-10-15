@@ -157,11 +157,11 @@ void eQ3::disconnect() {
     }
 }
 
-bool eQ3::connected() {
+bool eQ3::isConnected() {
     return state.connectionState >= EQ3_NONCES_EXCHANGED;
 }
 
-bool eQ3::paired() {
+bool eQ3::isPaired() {
     return state.connectionState == EQ3_PAIRED;
 }
 
@@ -304,9 +304,11 @@ void eQ3::onNotify(NimBLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t
                 eQ3Message::Status_Info_Message message;
                 message.data = msgdata;
                 printfDebug("[EQ3] New state: %d\n", message.getLockStatus());
-                _LockStatus = message.getLockStatus();
+                _LockStatus = message.getLockStatus();  
                 raw_data = message.data;
-                //onStatusChange((LockStatus)message.getLockStatus()); // BUG: löst einen Reset aus!!
+                if(onStatusChange != nullptr){
+                    onStatusChange(_LockStatus);
+                }
                 break;
             }
 

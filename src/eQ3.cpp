@@ -75,9 +75,6 @@ void eQ3::onDisconnect(BLEClient *pClient) {
 // --[onTick]-------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 bool eQ3::onTick() {
-    // end task when disconnected?
-    //if (state.connectionState == EQ3_DISCONNECTED)
-    //    return false;
     long now = millis();
     if ((state.connectionState > EQ3_CONNECTING || now - lastActivity > RECONNECT_INTERVALL) && state.connectionState != EQ3_DISCONNECTED){
         lastActivity = now;
@@ -118,24 +115,6 @@ bool eQ3::onTick() {
     }
     return true;
 }
-
-/*
-// -----------------------------------------------------------------------------
-// --[onResult]-----------------------------------------------------------------
-// -----------------------------------------------------------------------------
-void eQ3::onResult(BLEAdvertisedDevice* advertisedDevice) {
-    if (advertisedDevice->getAddress().toString() == address) {
-        printDebug("[EQ3] EQ3_FOUND");
-        printfDebug("# Found device: %s\n", advertisedDevice->getAddress().toString().c_str());
-        printfDebug("# RSSI: %s\n", advertisedDevice->getRSSI());
-        _RSSI = advertisedDevice->getRSSI();
-        bleScan->stop();
-        state.connectionState = EQ3_FOUND;
-    } else {
-        printfDebug("# Found device, but wrong one: %s\n", advertisedDevice->getAddress().toString().c_str());
-    }
-}
-*/
 
 // -----------------------------------------------------------------------------
 // --[setOnStatusChange]--------------------------------------------------------
@@ -296,8 +275,7 @@ void eQ3::onNotify(NimBLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t
 
             case 0x05: {
                 // status changed notification
-                printDebug("# Status changed notification");
-                // TODO request status
+                printDebug("[EQ3] Status changed notification");
                 auto * message = new eQ3Message::StatusRequestMessage;
                 sendMessage(message);
                 break;
@@ -325,7 +303,7 @@ void eQ3::onNotify(NimBLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t
                 // status info
                 eQ3Message::Status_Info_Message message;
                 message.data = msgdata;
-                printfDebug("# New state: %d\n", message.getLockStatus());
+                printfDebug("[EQ3] New state: %d\n", message.getLockStatus());
                 _LockStatus = message.getLockStatus();
                 raw_data = message.data;
                 //onStatusChange((LockStatus)message.getLockStatus()); // BUG: löst einen Reset aus!!
@@ -356,15 +334,13 @@ void eQ3::pairingRequest(std::string cardkey) {
     printDebug("[EQ3] Attempting Pairing");
     
     auto* message = new eQ3Message::PairingRequestMessage();
-
-    // Check required lengths for nonce and user key
+    
     assert(state.remote_session_nonce.length() == 8);
     assert(state.user_key.length() == 16);
     
     // Append user ID
     message->data.append(1, state.user_id);
-
-    // Convert the card key from hex to binary
+    
     std::string card_key = hexstring_to_string(cardkey);
 
     // Encrypt the pair key using the provided parameters
@@ -381,7 +357,7 @@ void eQ3::pairingRequest(std::string cardkey) {
     message->data.append(1, static_cast<char>(state.local_security_counter >> 8));
     message->data.append(1, static_cast<char>(state.local_security_counter & 0xFF));
 
-    // Prepare the extra data for authentication
+    // Prepare the data for authentication
     std::string extra;
     extra.append(1, state.user_id);
     extra.append(state.user_key);
@@ -392,10 +368,8 @@ void eQ3::pairingRequest(std::string cardkey) {
     std::string auth_value = compute_auth_value(extra, 0x04, state.remote_session_nonce, state.local_security_counter, card_key);
     message->data.append(auth_value);
 
-    // Ensure final message length is correct (29 bytes)
     assert(message->data.length() == 29);
 
-    // Send the pairing request message
     sendMessage(message);
 }
 

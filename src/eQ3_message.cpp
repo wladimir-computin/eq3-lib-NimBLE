@@ -141,7 +141,7 @@ eQ3Message::Status_Info_Message::Status_Info_Message() {
 // --[getLockStatus]------------------------------------------------------------
 // -----------------------------------------------------------------------------
 LockStatus eQ3Message::Status_Info_Message::getLockStatus() {
-    return (LockStatus)data[2] & 0x07;
+    return (LockStatus)(data[2] & 0x07);
 }
 
 // -----------------------------------------------------------------------------

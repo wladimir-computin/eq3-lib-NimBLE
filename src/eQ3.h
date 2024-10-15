@@ -25,7 +25,7 @@ typedef std::function<void(void*, eQ3*)> KeyBleStatusHandler;
 void tickTask(void *params);
 void notify_func(NimBLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify);
 
-class eQ3 : public NimBLEClientCallbacks 
+class eQ3 : public NimBLEClientCallbacks {
     friend void tickTask(void *params);
     bool onTick();
     void onConnect(BLEClient *pClient);

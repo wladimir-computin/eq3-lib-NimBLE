@@ -13,25 +13,25 @@ Thanks go to <a href="https://github.com/RoP09">RoP09</a>, <a href="https://gith
 ``` 
 
 ```cpp
-    eQ3();
-    void setup(String ble_address, String user_key, unsigned char user_id = 0x01, String name = "");
-    void loop(); // must call!
-    void setOnStatusChange(std::function<void(LockStatus)> cb); // optional, untested
+eQ3();
+void setup(String ble_address, String user_key, unsigned char user_id = 0x01, String name = "");
+void loop(); // must call!
+void setOnStatusChange(std::function<void(LockStatus)> cb); // optional, untested
 ```
 
 ### Get
 ```cpp
-    bool isConnected();
-    bool isPaired();
-    void updateInfo();
+bool isConnected();
+bool isPaired();
+void updateInfo();
 ```
 
 ### Set
 ```cpp
-	void connect();
-	void disconnect();
-	void lock();
-	void unlock();
-	void open();
-	void pairingRequest(std::string cardkey); // call after the ESP32 fully connected to the lock
+void connect();
+void disconnect();
+void lock();
+void unlock();
+void open();
+void pairingRequest(std::string cardkey); // call after the ESP32 fully connected to the lock
 ```

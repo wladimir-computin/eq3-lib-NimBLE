@@ -138,10 +138,10 @@ eQ3Message::Status_Info_Message::Status_Info_Message() {
 }
 
 // -----------------------------------------------------------------------------
-// --[getLockStatus]------------------------------------------------------------
+// --[getLockState]------------------------------------------------------------
 // -----------------------------------------------------------------------------
-LockStatus eQ3Message::Status_Info_Message::getLockStatus() {
-    return (LockStatus)(data[2] & 0x07);
+LockState eQ3Message::Status_Info_Message::getLockState() {
+    return (LockState)(data[2] & 0x07);
 }
 
 // -----------------------------------------------------------------------------
@@ -149,6 +149,14 @@ LockStatus eQ3Message::Status_Info_Message::getLockStatus() {
 // -----------------------------------------------------------------------------
 int eQ3Message::Status_Info_Message::getUserRightType() {
     return (data[1] & 0x30) >> 4;
+}
+
+BatteryState eQ3Message::Status_Info_Message::getBatteryState() {
+    return (BatteryState)getBit(data[1], 7);
+}
+
+bool eQ3Message::Status_Info_Message::getPairingAllowed() {
+    return getBit(data[1], 0);
 }
 
 // -----------------------------------------------------------------------------

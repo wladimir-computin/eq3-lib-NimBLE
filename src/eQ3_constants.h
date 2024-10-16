@@ -7,6 +7,8 @@
 
 #include <string>
 
+#define EQ3_USER_KEY_LEN 16
+
 typedef enum {
     EQ3_DISCONNECTED = 0,
     EQ3_DISCONNECTING = 1,
@@ -19,6 +21,11 @@ typedef enum {
     EQ3_NONCES_EXCHANGED = 8,
     EQ3_PAIRED = 9
 } ConnectionState;
+
+typedef enum {
+    EQ3_NORMAL = 0,
+    EQ3_LOW = 1
+} BatteryState;
 
 typedef struct {
     uint8_t user_id;
@@ -44,10 +51,21 @@ typedef enum {
     EQ3_LOCKED = 3,
     EQ3_OPENED = 4,
     EQ3_TIMEOUT = 9
-} LockStatus;
+} LockState;
+
+static std::string batteryStateToString(BatteryState in){
+  switch(in){
+    case EQ3_NORMAL:
+      return "NORMAL";
+    case EQ3_LOW:
+      return "LOW";
+    default:
+      return "NORMAL";
+  }
+}
 
 
-static std::string ConnectionStateToString(ConnectionState in){
+static std::string connectionStateToString(ConnectionState in){
   switch(in){
     case EQ3_DISCONNECTED:
       return "DISCONNECTED";
@@ -74,7 +92,7 @@ static std::string ConnectionStateToString(ConnectionState in){
   }
 }
 
-static std::string lockstatusToString(LockStatus in){
+static std::string lockStateToString(LockState in){
   switch(in){
     case EQ3_STATUSPENDING:
       return "STATUSPENDING";

@@ -44,26 +44,28 @@ class eQ3 : public NimBLEClientCallbacks {
 
     NimBLERemoteCharacteristic *sendChar;
     NimBLERemoteCharacteristic *recvChar;
-
+    
     long lastActivity = 0;
+    ClientState state;
+    LockState lockState;
+    BatteryState batteryState;
+    bool pairingAllowed;
+    int rssi = 0;
 
     //SemaphoreHandle_t mutex;
-    std::function<void(LockStatus)> onStatusChange = nullptr;
+    std::function<void(LockState)> onStatusChange = nullptr;
 public:
     void onNotify(NimBLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify);    
 
 public:
-    ClientState state;
-    NimBLEClient *bleClient;
-    LockStatus _LockStatus;
-    int _RSSI;
-    std::string raw_data;
 
+    NimBLEClient *bleClient;
+    std::string raw_data;
 
     eQ3();
     void setup(String ble_address, String user_key, unsigned char user_id = 0xFF, String name = "");
     void loop();
-    void setOnStatusChange(std::function<void(LockStatus)> cb);
+    void setOnStatusChange(std::function<void(LockState)> cb);
     
     void lock();
     void unlock();
@@ -74,6 +76,14 @@ public:
     bool isConnected();
     bool isPaired();
     void updateInfo();
+    ConnectionState getConnectionState();
+    LockState getLockState();
+    BatteryState getBatteryState();
+    String getBatteryStateStr();
+    String getConnectionStateStr();
+    String getLockStateStr();
+    int getRSSI();
+    String genRandomUserKey();
 };
 
 #endif //DOOR_OPENER_EQ3_H

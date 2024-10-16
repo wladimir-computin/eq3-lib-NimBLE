@@ -6,9 +6,6 @@
 #include "eQ3.h"
 using namespace std;
 
-int _LockStatus = 0;
-int _RSSI = 0;
-
 eQ3* cb_instance;
 
 #define SEMAPHORE_WAIT_TIME  (10000 / portTICK_PERIOD_MS)
@@ -119,7 +116,7 @@ bool eQ3::onTick() {
 // -----------------------------------------------------------------------------
 // --[setOnStatusChange]--------------------------------------------------------
 // -----------------------------------------------------------------------------
-void eQ3::setOnStatusChange(std::function<void(LockStatus)> cb) {
+void eQ3::setOnStatusChange(std::function<void(LockState)> cb) {
     onStatusChange = cb;
 }
 
@@ -303,11 +300,13 @@ void eQ3::onNotify(NimBLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t
                 // status info
                 eQ3Message::Status_Info_Message message;
                 message.data = msgdata;
-                printfDebug("[EQ3] New state: %d\n", message.getLockStatus());
-                _LockStatus = message.getLockStatus();  
+                printfDebug("[EQ3] New state: %d\n", message.getLockState());
+                lockState = message.getLockState(); 
+                batteryState = message.getBatteryState();  
+                pairingAllowed = message.getPairingAllowed();  
                 raw_data = message.data;
                 if(onStatusChange != nullptr){
-                    onStatusChange(_LockStatus);
+                    onStatusChange(lockState);
                 }
                 break;
             }
@@ -338,7 +337,7 @@ void eQ3::pairingRequest(std::string cardkey) {
     auto* message = new eQ3Message::PairingRequestMessage();
     
     assert(state.remote_session_nonce.length() == 8);
-    assert(state.user_key.length() == 16);
+    assert(state.user_key.length() == EQ3_USER_KEY_LEN);
     
     // Append user ID
     message->data.append(1, state.user_id);
@@ -397,22 +396,64 @@ void eQ3::sendCommand(CommandType command) {
 }
 
 void eQ3::unlock() {
-    sendCommand(EQ3_UNLOCK);
+    if(isPaired()){
+        sendCommand(EQ3_UNLOCK);
+    }
 }
 
 void eQ3::lock() {
-    sendCommand(EQ3_LOCK);
+    if(isPaired()){
+        sendCommand(EQ3_LOCK);
+    }
 }
 
 void eQ3::open() {
-    sendCommand(EQ3_OPEN);
+    if(isPaired()){
+        sendCommand(EQ3_OPEN);
+    }
 }
 
 void eQ3::updateInfo() {
     //xSemaphoreTake(mutex, SEMAPHORE_WAIT_TIME);
-    _RSSI = bleClient->getRssi ();
-    printfDebug("[EQ3] Got RSSI: %d dBm\n", _RSSI);
-    auto * message = new eQ3Message::StatusRequestMessage;
-    sendMessage(message);
+    if(isConnected()){
+        rssi = bleClient->getRssi();
+        printfDebug("[EQ3] Got RSSI: %d dBm\n", rssi);
+        auto * message = new eQ3Message::StatusRequestMessage;
+        sendMessage(message);
+    }
     //xSemaphoreGive(mutex);
+}
+
+ConnectionState eQ3::getConnectionState(){
+    return state.connectionState;
+}   
+
+LockState eQ3::getLockState(){
+    return lockState;
+}
+
+BatteryState eQ3::getBatteryState(){
+    return batteryState;
+}
+
+String eQ3::getBatteryStateStr(){
+    return batteryStateToString(batteryState).c_str();
+}
+
+String eQ3::getConnectionStateStr(){
+    return connectionStateToString(state.connectionState).c_str();
+}
+
+String eQ3::getLockStateStr(){
+    return lockStateToString(lockState).c_str();
+}
+
+int eQ3::getRSSI(){
+    return rssi;
+}
+
+String eQ3::genRandomUserKey(){
+    uint8_t random_user_key[EQ3_USER_KEY_LEN];
+    esp_fill_random(random_user_key, EQ3_USER_KEY_LEN);
+    return bytes_to_hexstring(random_user_key, EQ3_USER_KEY_LEN).c_str();
 }

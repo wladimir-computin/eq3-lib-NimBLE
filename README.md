@@ -24,6 +24,13 @@ void setOnStatusChange(std::function<void(LockStatus)> cb); // optional, unteste
 bool isConnected();
 bool isPaired();
 void updateInfo();
+ConnectionState getConnectionState();
+LockState getLockState();
+BatteryState getBatteryState();
+String getBatteryStateStr();
+String getConnectionStateStr();
+String getLockStateStr();
+int getRSSI();
 ```
 
 ### Set

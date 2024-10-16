@@ -50,8 +50,10 @@ public:
     class Status_Info_Message : public Message {
     public:
         Status_Info_Message();
-        LockStatus getLockStatus();
+        LockState getLockState();
         int getUserRightType();
+        BatteryState getBatteryState();
+        bool getPairingAllowed();
     };
 
     class StatusRequestMessage : public Message {
@@ -101,6 +103,10 @@ public:
         char id;
         FragmentAckMessage(char fragment_id);
     };
+    
+    static bool getBit(uint8_t val, int bit){
+        return (val & (1 << bit)) != 0;
+    }
 };
 
 #endif //DOOR_OPENER_EQ3MESSAGE_H

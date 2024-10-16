@@ -2,6 +2,10 @@
 ESP32/Arduino port of the keyble library using NimBLE for parallel WiFi and BLE connectivity.
 Standalone library.
 
+You can control your eQ3 bluetooth Smartlock using just an ESP32:
+
+https://www.eq-3.de/produkte/eqiva/detail/bluetooth-smart-tuerschlossantrieb.html
+
 Thanks go to <a href="https://github.com/RoP09">RoP09</a>, <a href="https://github.com/tc-maxx">tc-maxx</a>, <a href="https://github.com/henfri">henfri</a>, <a href="https://github.com/MariusSchiffer">MariusSchiffer</a>, <a href="https://github.com/oyooyo">oyooyo</a> and <a href="https://github.com/KlausMu">KlausMu</a> for their brillant work!
 
 ## API

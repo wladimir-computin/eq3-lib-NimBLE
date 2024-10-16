@@ -71,7 +71,7 @@ public:
     void lock();
     void unlock();
     void open();
-    void pairingRequest(std::string cardkey);
+    void pairingRequest(String cardkey);
     void connect();
     void disconnect();
     bool isConnected();

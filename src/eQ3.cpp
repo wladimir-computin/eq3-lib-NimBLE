@@ -331,7 +331,7 @@ void eQ3::onNotify(NimBLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t
 // -----------------------------------------------------------------------------
 // --[pairingRequest]-----------------------------------------------------------
 // -----------------------------------------------------------------------------
-void eQ3::pairingRequest(std::string cardkey) {
+void eQ3::pairingRequest(String cardkey) {
     printDebug("[EQ3] Attempting Pairing");
     
     auto* message = new eQ3Message::PairingRequestMessage();
@@ -341,8 +341,8 @@ void eQ3::pairingRequest(std::string cardkey) {
     
     // Append user ID
     message->data.append(1, state.user_id);
-    
-    std::string card_key = hexstring_to_string(cardkey);
+    std::string cardkey2 = cardkey.c_str();
+    std::string card_key = hexstring_to_string(cardkey2);
 
     // Encrypt the pair key using the provided parameters
     std::string encrypted_pair_key = crypt_data(state.user_key, 0x04, state.remote_session_nonce, state.local_security_counter, card_key);

@@ -48,5 +48,5 @@ void disconnect();
 void lock();
 void unlock();
 void open();
-void pairingRequest(std::string cardkey); // call after the ESP32 fully connected to the lock
+void pairingRequest(String cardkey); // call after the ESP32 fully connected to the lock
 ```

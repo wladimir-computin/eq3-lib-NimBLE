@@ -457,3 +457,30 @@ String eQ3::genRandomUserKey(){
     esp_fill_random(random_user_key, EQ3_USER_KEY_LEN);
     return bytes_to_hexstring(random_user_key, EQ3_USER_KEY_LEN).c_str();
 }
+
+String eQ3::getMACfromSecurityCard(String securityCardStr){
+    if(securityCardStr.length() == 56){
+        return formatMacAddress(securityCardStr.c_str() + 1);
+    }
+    return "";
+}
+
+String eQ3::getCardKeyfromSecurityCard(String securityCardStr){
+    if(securityCardStr.length() == 56){
+        String card_key = securityCardStr.substring(1+12+1, 1+12+1+32);
+        return card_key;
+    }
+    return "";
+}
+
+String eQ3::formatMacAddress(const char * macCharArray) {
+  String formattedMac = "";
+  
+  for (int i = 0; i < 12; i++) {
+    formattedMac += macCharArray[i];
+    if (i % 2 == 1 && i < 11) {
+      formattedMac += ":";
+    }
+  }
+  return formattedMac;
+}

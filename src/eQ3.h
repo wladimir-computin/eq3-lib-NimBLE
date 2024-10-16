@@ -34,6 +34,7 @@ class eQ3 : public NimBLEClientCallbacks {
     void exchangeNonces();
     bool sendMessage(eQ3Message::Message *msg);
     void sendCommand(CommandType command);
+    static String formatMacAddress(const char * macCharArray);
 
     friend NimBLEClient;
 
@@ -83,7 +84,9 @@ public:
     String getConnectionStateStr();
     String getLockStateStr();
     int getRSSI();
-    String genRandomUserKey();
+    static String genRandomUserKey();
+    static String getMACfromSecurityCard(String securityCardStr);
+    static String getCardKeyfromSecurityCard(String securityCardStr);
 };
 
 #endif //DOOR_OPENER_EQ3_H

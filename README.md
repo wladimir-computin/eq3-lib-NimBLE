@@ -35,6 +35,10 @@ String getBatteryStateStr();
 String getConnectionStateStr();
 String getLockStateStr();
 int getRSSI();
+
+static String genRandomUserKey();
+static String getMACfromSecurityCard(String securityCardStr);
+static String getCardKeyfromSecurityCard(String securityCardStr);
 ```
 
 ### Set
